@@ -89,7 +89,7 @@ static inline int spi_send(struct net_buf *buf)
 				    0x00, 0x00, 0x00 };
 	int ret;
 
-	LOG_DBG("buf %p type %u len %u", buf, bt_buf_get_type(buf), buf->len);
+	LOG_INF("buf %p type %u len %u", buf, bt_buf_get_type(buf), buf->len);
 
 	switch (bt_buf_get_type(buf)) {
 	case BT_BUF_ACL_IN:
@@ -115,6 +115,7 @@ static inline int spi_send(struct net_buf *buf)
 
 	/* Coordinate transfer lock with the spi rx thread */
 	k_sem_take(&sem_spi_tx, K_FOREVER);
+	LOG_DBG("Send");
 
 	tx.buf = header_slave;
 	tx.len = 5;
@@ -137,6 +138,7 @@ static inline int spi_send(struct net_buf *buf)
 	net_buf_unref(buf);
 
 	gpio_pin_set(gpio_dev, GPIO_IRQ_PIN, 0);
+	LOG_INF("DONE");
 	k_sem_give(&sem_spi_rx);
 
 	return 0;
